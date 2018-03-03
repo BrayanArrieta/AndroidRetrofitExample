@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
@@ -36,22 +37,31 @@ public class MainActivity extends AppCompatActivity {
     Heroes heroesService;
     ListView listViewHeroes;
     HeroesAdapter heroesAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        gson= new GsonBuilder()
+        gson = new GsonBuilder()
                 //.setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
                 .create();
-        retrofit= new Retrofit.Builder()
+        retrofit = new Retrofit.Builder()
                 .baseUrl("http://192.168.1.120:3000")
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
-        heroesService= retrofit.create(Heroes.class);
-        listViewHeroes=(ListView)findViewById(R.id.listViewHeroes);
-        getHeroes ();
+        heroesService = retrofit.create(Heroes.class);
+        listViewHeroes = (ListView) findViewById(R.id.listViewHeroes);
+        listViewHeroes.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                // l is the hero id
+                Toast.makeText(getApplicationContext(),
+                        Long.toString(l), Toast.LENGTH_SHORT).show();
+            }
+        });
+        getHeroes();
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -64,23 +74,24 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private void getHeroes (){
-        Call<List<Hero>> call=heroesService.get(null);
+    private void getHeroes() {
+        Call<List<Hero>> call = heroesService.get(null);
         call.enqueue(new Callback<List<Hero>>() {
             @Override
             public void onResponse(Call<List<Hero>> call, Response<List<Hero>> response) {
-                if(response.isSuccessful()){
-                    List<Hero> heroes=response.body();
-                    listViewHeroes.setAdapter(new HeroesAdapter(getApplicationContext(),heroes));
+                if (response.isSuccessful()) {
+                    List<Hero> heroes = response.body();
+                    listViewHeroes.setAdapter(new HeroesAdapter(getApplicationContext(), heroes));
                     Toast.makeText(getApplicationContext(),
                             "Yes", Toast.LENGTH_SHORT).show();
-                }else{
-                    int statusCode  = response.code();
+                } else {
+                    int statusCode = response.code();
                     // handle request errors depending on status code
                     Toast.makeText(getApplicationContext(),
                             "Error handler", Toast.LENGTH_SHORT).show();
                 }
             }
+
             @Override
             public void onFailure(Call<List<Hero>> call, Throwable t) {
                 //Failed
@@ -90,6 +101,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -112,58 +124,42 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-//    class HeroesAdapter extends ArrayAdapter<Hero> {
-//        private List<Hero> heroes;
-//        HeroesAdapter(List<Hero> heroes) {
-//            super(MainActivity.this, R.layout.row_hero);
-//            this.heroes=heroes;
-//        }
-//        public View getView(int position, View convertView, ViewGroup parent){
-//            View view=convertView;
-//            if(view==null){
-//                LayoutInflater inflater=getLayoutInflater();
-//                view=inflater.inflate(R.layout.row_hero, null);
-//            }
-//            Hero hero = this.heroes.get(position);
-//            TextView textView = (TextView)view.findViewById(R.id.textView);
-//            textView.setText(hero.getName());
-//            return view;
-//        }
-//    }
-    class HeroesAdapter extends BaseAdapter{
-    private Context context;
-    private List<Hero> heroes;
-    public HeroesAdapter(Context context, List<Hero> heroes) {
-        this.context = context;
-        this.heroes=heroes;
-    }
-    @Override
-    public int getCount() {
-        return this.heroes.size();
-    }
+    class HeroesAdapter extends BaseAdapter {
+        private Context context;
+        private List<Hero> heroes;
 
-    @Override
-    public Object getItem(int i) {
-        return this.heroes.get(i);
-    }
-
-    @Override
-    public long getItemId(int i) {
-        return this.heroes.get(i).getId();
-    }
-
-    @Override
-    public View getView(int i, View view, ViewGroup viewGroup) {
-        View rowView=view;
-        if(rowView==null){
-            LayoutInflater inflater=getLayoutInflater();
-            view=inflater.inflate(R.layout.row_hero, viewGroup ,false);
+        public HeroesAdapter(Context context, List<Hero> heroes) {
+            this.context = context;
+            this.heroes = heroes;
         }
-        Hero hero = (Hero) this.getItem(i);
-        TextView textView = (TextView)view.findViewById(R.id.textView);
-        textView.setText(hero.getName());
-        return view;
+
+        @Override
+        public int getCount() {
+            return this.heroes.size();
+        }
+
+        @Override
+        public Object getItem(int i) {
+            return this.heroes.get(i);
+        }
+
+        @Override
+        public long getItemId(int i) {
+            return this.heroes.get(i).getId();
+        }
+
+        @Override
+        public View getView(int i, View view, ViewGroup viewGroup) {
+            View rowView = view;
+            if (rowView == null) {
+                LayoutInflater inflater = getLayoutInflater();
+                view = inflater.inflate(R.layout.row_hero, viewGroup, false);
+            }
+            Hero hero = (Hero) this.getItem(i);
+            TextView textView = (TextView) view.findViewById(R.id.textView);
+            textView.setText(hero.getName());
+            return view;
+        }
     }
-}
 
 }
