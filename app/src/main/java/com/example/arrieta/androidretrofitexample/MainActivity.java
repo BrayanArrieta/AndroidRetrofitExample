@@ -58,8 +58,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 // l is the hero id
-                Toast.makeText(getApplicationContext(),
-                        Long.toString(l), Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(MainActivity.this, ShowHeroActivity.class));
             }
         });
         getHeroes();
