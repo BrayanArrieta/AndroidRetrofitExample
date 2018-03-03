@@ -1,5 +1,6 @@
 package com.example.arrieta.androidretrofitexample;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -11,6 +12,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -69,15 +71,21 @@ public class MainActivity extends AppCompatActivity {
             public void onResponse(Call<List<Hero>> call, Response<List<Hero>> response) {
                 if(response.isSuccessful()){
                     List<Hero> heroes=response.body();
-                    listViewHeroes.setAdapter(new HeroesAdapter(heroes));
+                    listViewHeroes.setAdapter(new HeroesAdapter(getApplicationContext(),heroes));
+                    Toast.makeText(getApplicationContext(),
+                            "Yes", Toast.LENGTH_SHORT).show();
                 }else{
                     int statusCode  = response.code();
                     // handle request errors depending on status code
+                    Toast.makeText(getApplicationContext(),
+                            "Error handler", Toast.LENGTH_SHORT).show();
                 }
             }
             @Override
             public void onFailure(Call<List<Hero>> call, Throwable t) {
                 //Failed
+                Toast.makeText(getApplicationContext(),
+                        "Failure", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -104,23 +112,58 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    class HeroesAdapter extends ArrayAdapter<Hero> {
-        private List<Hero> heroes;
-        HeroesAdapter(List<Hero> heroes) {
-            super(MainActivity.this, R.layout.row_hero);
-            this.heroes=heroes;
-        }
-        public View getView(int position, View convertView, ViewGroup parent){
-            View view=convertView;
-            if(view==null){
-                LayoutInflater inflater=getLayoutInflater();
-                view=inflater.inflate(R.layout.row_hero, null);
-            }
-            Hero hero = this.heroes.get(position);
-            TextView textView = (TextView)view.findViewById(R.id.textView);
-            textView.setText(hero.getName());
-            return view;
-        }
+//    class HeroesAdapter extends ArrayAdapter<Hero> {
+//        private List<Hero> heroes;
+//        HeroesAdapter(List<Hero> heroes) {
+//            super(MainActivity.this, R.layout.row_hero);
+//            this.heroes=heroes;
+//        }
+//        public View getView(int position, View convertView, ViewGroup parent){
+//            View view=convertView;
+//            if(view==null){
+//                LayoutInflater inflater=getLayoutInflater();
+//                view=inflater.inflate(R.layout.row_hero, null);
+//            }
+//            Hero hero = this.heroes.get(position);
+//            TextView textView = (TextView)view.findViewById(R.id.textView);
+//            textView.setText(hero.getName());
+//            return view;
+//        }
+//    }
+    class HeroesAdapter extends BaseAdapter{
+    private Context context;
+    private List<Hero> heroes;
+    public HeroesAdapter(Context context, List<Hero> heroes) {
+        this.context = context;
+        this.heroes=heroes;
     }
+    @Override
+    public int getCount() {
+        return this.heroes.size();
+    }
+
+    @Override
+    public Object getItem(int i) {
+        return this.heroes.get(i);
+    }
+
+    @Override
+    public long getItemId(int i) {
+        return this.heroes.get(i).getId();
+    }
+
+    @Override
+    public View getView(int i, View view, ViewGroup viewGroup) {
+        View rowView=view;
+        if(rowView==null){
+            LayoutInflater inflater=getLayoutInflater();
+            view=inflater.inflate(R.layout.row_hero, viewGroup ,false);
+        }
+        Hero hero = (Hero) this.getItem(i);
+        TextView textView = (TextView)view.findViewById(R.id.textView);
+        textView.setText(hero.getName());
+        return view;
+    }
+}
 
 }
