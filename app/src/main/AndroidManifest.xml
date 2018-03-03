@@ -22,7 +22,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".AddHeroActivity" />
-        <activity android:name=".ShowHeroActivity"></activity>
+        <activity android:name=".ShowHeroActivity" />
+        <activity android:name=".ModifyHeroActivity"></activity>
     </application>
 
 </manifest>

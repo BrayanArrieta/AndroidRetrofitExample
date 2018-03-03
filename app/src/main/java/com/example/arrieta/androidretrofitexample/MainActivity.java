@@ -40,7 +40,8 @@ public class MainActivity extends AppCompatActivity {
     Heroes heroesService;
     ListView listViewHeroes;
     HeroesAdapter heroesAdapter;
-
+    List<Hero> heroes;
+    Long id;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,13 +57,19 @@ public class MainActivity extends AppCompatActivity {
                 .build();
         heroesService = retrofit.create(Heroes.class);
         listViewHeroes = (ListView) findViewById(R.id.listViewHeroes);
+        registerForContextMenu(listViewHeroes);
         listViewHeroes.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 // l is the hero id
-                Intent intent = new Intent(MainActivity.this, ShowHeroActivity.class);
-                intent.putExtra("id",l);
-                startActivity(intent);
+                id=l;
+                listViewHeroes.showContextMenu();
+            }
+        });
+        listViewHeroes.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                return true;
             }
         });
         getHeroes();
@@ -85,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<List<Hero>> call, Response<List<Hero>> response) {
                 if (response.isSuccessful()) {
-                    List<Hero> heroes = response.body();
+                    heroes = response.body();
                     listViewHeroes.setAdapter(new HeroesAdapter(getApplicationContext(), heroes));
                     Toast.makeText(getApplicationContext(),
                             "Yes", Toast.LENGTH_SHORT).show();
@@ -172,5 +179,22 @@ public class MainActivity extends AppCompatActivity {
         super.onCreateContextMenu(menu, v, menuInfo);
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.context_menu, menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        Intent intent;
+        switch (item.getItemId()){
+            case R.id.showHero:
+                intent = new Intent(MainActivity.this,ShowHeroActivity.class);
+                intent.putExtra("id",id);
+                startActivity(intent);
+            case R.id.modifyHero:
+                intent = new Intent(MainActivity.this, ModifyHeroActivity.class);
+                intent.putExtra("id",id);
+                startActivity(intent);
+            default:
+                return super.onContextItemSelected(item);
+        }
     }
 }
