@@ -189,10 +189,12 @@ public class MainActivity extends AppCompatActivity {
                 intent = new Intent(MainActivity.this,ShowHeroActivity.class);
                 intent.putExtra("id",id);
                 startActivity(intent);
+                break;
             case R.id.modifyHero:
                 intent = new Intent(MainActivity.this, ModifyHeroActivity.class);
                 intent.putExtra("id",id);
                 startActivity(intent);
+                break;
             default:
                 return super.onContextItemSelected(item);
         }
