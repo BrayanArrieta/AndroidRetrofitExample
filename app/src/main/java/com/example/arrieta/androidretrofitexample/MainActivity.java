@@ -196,7 +196,9 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
                 break;
             default:
-                return super.onContextItemSelected(item);
+                break;
         }
+        return super.onContextItemSelected(item);
     }
+
 }
