@@ -25,6 +25,6 @@ public interface Heroes {
     @PUT("/heroes/{id}")
     Call<Hero> put(@Path("id") Integer id, @Body Hero hero);
     @DELETE("/heroes/{id}")
-    Call<Hero> delete(@Path("id") Integer id );
+    Call<Hero> delete(@Path("id") Long id );
 
 }

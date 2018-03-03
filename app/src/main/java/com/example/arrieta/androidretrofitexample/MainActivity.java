@@ -1,10 +1,12 @@
 package com.example.arrieta.androidretrofitexample;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.ContextMenu;
@@ -69,6 +71,9 @@ public class MainActivity extends AppCompatActivity {
         listViewHeroes.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                deleteHero(l);
+                heroes.remove(heroes.get(i));
+                heroesAdapter.notifyDataSetChanged();
                 return true;
             }
         });
@@ -93,7 +98,8 @@ public class MainActivity extends AppCompatActivity {
             public void onResponse(Call<List<Hero>> call, Response<List<Hero>> response) {
                 if (response.isSuccessful()) {
                     heroes = response.body();
-                    listViewHeroes.setAdapter(new HeroesAdapter(getApplicationContext(), heroes));
+                    heroesAdapter=new HeroesAdapter(getApplicationContext(), heroes);
+                    listViewHeroes.setAdapter(heroesAdapter);
                     Toast.makeText(getApplicationContext(),
                             "Yes", Toast.LENGTH_SHORT).show();
                 } else {
@@ -199,6 +205,25 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
         return super.onContextItemSelected(item);
+    }
+
+    public void deleteHero(Long id){
+        Call<Hero> call = heroesService.delete(id);
+        call.enqueue(new Callback<Hero>() {
+            @Override
+            public void onResponse(Call<Hero> call, Response<Hero> response) {
+                if (response.isSuccessful()){
+                    //Yes
+                }else{
+                    int statusCode  = response.code();
+                }
+            }
+            @Override
+            public void onFailure(Call<Hero> call, Throwable t) {
+                //Failed
+            }
+        });
+
     }
 
 }
