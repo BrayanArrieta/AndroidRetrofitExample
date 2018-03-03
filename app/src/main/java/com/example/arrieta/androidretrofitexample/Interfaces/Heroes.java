@@ -19,7 +19,7 @@ import retrofit2.http.Query;
 
 public interface Heroes {
     @GET("/heroes")
-    Call<List<Hero>> get(@Query("id") Integer id);
+    Call<List<Hero>> get(@Query("id") Long id);
     @POST("/heroes")
     Call<Hero> post(@Body Hero hero);
     @PUT("/heroes/{id}")

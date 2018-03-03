@@ -58,7 +58,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 // l is the hero id
-                startActivity(new Intent(MainActivity.this, ShowHeroActivity.class));
+                Intent intent = new Intent(MainActivity.this, ShowHeroActivity.class);
+                intent.putExtra("id",l);
+                startActivity(intent);
             }
         });
         getHeroes();
